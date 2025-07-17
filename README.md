@@ -203,18 +203,7 @@ if _, err := client.Get(context.Background(), "/users/42", &user, nil); err != n
 
 ---
 
-## 🧉 Contributing
-
-Contributions welcome! Please open an issue or PR for:
-
-- Retry on 5xx, 429 logic
-- Support for form-data, file upload, streaming
-- GZIP, multipart, caching
-- Custom transports (e.g. tracing, metrics)
-
----
-
 ## 📄 License
 
-MIT License. See [LICENSE](./LICENSE) for details.
+MIT License. See [LICENSE](./LICENCE) for details.
 

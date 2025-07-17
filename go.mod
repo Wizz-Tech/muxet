@@ -1,3 +1,3 @@
-module github.com/Wizz-Tech/muxet/v1
+module github.com/Wizz-Tech/muxet
 
 go 1.24.4
