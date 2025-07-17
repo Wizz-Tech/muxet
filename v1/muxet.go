@@ -60,7 +60,7 @@ func NewClient() *Client {
 	return &Client{
 		client:     &http.Client{},
 		headers:    make(map[string]string),
-		timeout:    15 * time.Second,
+		timeout:    5 * time.Second,
 		maxRetries: 0,
 		backoff:    0,
 	}
