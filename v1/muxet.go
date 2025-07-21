@@ -174,14 +174,10 @@ func (c *Client) DoRequest(ctx context.Context, method, rawURL string, body any,
 
 		if out != nil {
 			if s, ok := out.(*string); ok {
-				// Read body as a raw string
-				bodyBytes, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return resp, fmt.Errorf("failed to read response body: %w", err)
-				}
-				*s = string(bodyBytes)
+				*s = string(rawBody)
 			} else {
-				if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+				// decode json from rawBody bytes instead of resp.Body
+				if err := json.Unmarshal(rawBody, out); err != nil {
 					return resp, fmt.Errorf("failed to decode response: %w", err)
 				}
 			}
