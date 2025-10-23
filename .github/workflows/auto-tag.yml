@@ -1,0 +1,56 @@
+name: Auto Tag
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # needed to push tags
+
+jobs:
+  auto-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # svu needs full history & tags
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install svu
+        run: |
+          set -e
+          go install github.com/caarlos0/svu/v3@latest
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          svu --version
+
+      - name: Configure git author
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Compute next version
+        id: next
+        run: |
+          set -e
+          ver="$(svu next)"
+          echo "next=$ver" >> "$GITHUB_OUTPUT"
+          echo "Next version: $ver"
+
+      - name: Tag and push
+        env:
+          NEXT_TAG: ${{ steps.next.outputs.next }}
+        run: |
+          if git rev-parse "refs/tags/${NEXT_TAG}" >/dev/null 2>&1; then
+            echo "Tag ${NEXT_TAG} already exists. Nothing to do."
+            exit 0
+          fi
+          git tag -a "${NEXT_TAG}" -m "chore(release): ${NEXT_TAG}"
+          git push origin "refs/tags/${NEXT_TAG}"
